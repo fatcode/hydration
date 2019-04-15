@@ -2,6 +2,7 @@
 
 namespace FatCode\Tests\Storage\Hydration\Type;
 
+use FatCode\Hydration\Exception\HydrationException;
 use FatCode\Hydration\Type\EmbedType;
 use FatCode\Tests\Hydration\Fixtures\User;
 use FatCode\Tests\Hydration\Fixtures\UserName;
@@ -39,5 +40,45 @@ final class EmbedTypeTest extends TestCase
         self::assertInstanceOf(UserName::class, $hydrated->getName());
         self::assertSame('John', $hydrated->getName()->getFirstName());
         self::assertSame('Doe', $hydrated->getName()->getLastName());
+    }
+
+    public function testExtract() : void
+    {
+        $user = new User(new UserName('John', 'Doe'), new UserWallet('GBP', '100.50'));
+        $type = new EmbedType(new UserSchema());
+        $extracted = $type->extract($user);
+
+        self::assertEquals(
+            [
+                'firstName' => 'John',
+                'lastName' => 'Doe',
+            ],
+            $extracted['name']
+        );
+
+        self::assertEquals(
+            [
+                'currency' => 'GBP',
+                'amount' => '100.50',
+            ],
+            $extracted['wallet']
+        );
+
+        self::assertArrayHasKey('creationTimeDate', $extracted);
+        self::assertArrayHasKey('creationTimeTimezone', $extracted);
+    }
+
+    public function testFailOnNullableExtraction() : void
+    {
+        $this->expectException(HydrationException::class);
+        $type = new EmbedType(new UserSchema());
+        $type->extract(null);
+    }
+
+    public function testExtractNull() : void
+    {
+        $type = new EmbedType(new UserSchema());
+        $type->nullable();
+        self::assertNull($type->extract(null));
     }
 }
