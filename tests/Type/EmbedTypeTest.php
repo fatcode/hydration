@@ -8,7 +8,6 @@ use FatCode\Tests\Hydration\Fixtures\User;
 use FatCode\Tests\Hydration\Fixtures\UserName;
 use FatCode\Tests\Hydration\Fixtures\UserSchema;
 use FatCode\Tests\Hydration\Fixtures\UserWallet;
-use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\TestCase;
 
 final class EmbedTypeTest extends TestCase
@@ -18,7 +17,7 @@ final class EmbedTypeTest extends TestCase
         $type = new EmbedType(new UserSchema());
         /** @var User $hydrated */
         $hydrated = $type->hydrate([
-            'id' => new ObjectId(),
+            'id' => 1,
             'name' => [
                 'firstName' => 'John',
                 'lastName' => 'Doe',
