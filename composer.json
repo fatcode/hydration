@@ -1,0 +1,50 @@
+{
+  "name": "fatcode/hydration",
+  "description": "Hydration/Extraction library for PHP7",
+  "keywords": [
+    "hydration",
+    "extraction",
+    "serialization",
+    "deserialization",
+    "library",
+    "utilities",
+    "php"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dawid <krac> Kraczkowski",
+      "email": "dawid.kraczkowski@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.2.0",
+    "ext-bcmath": "*",
+    "ext-mbstring" : "*",
+    "ext-json" : "*",
+    "fatcode/enum": ">=1.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": ">=8.0",
+    "mockery/mockery": ">=1.2",
+    "fzaninotto/faker": ">=1.8",
+    "squizlabs/php_codesniffer": ">=3.0",
+    "vimeo/psalm": ">=3.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "FatCode\\Hydration\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "FatCode\\Tests\\Hydration\\": "tests/"
+    }
+  },
+  "scripts": {
+    "phpunit": "vendor/bin/phpunit --coverage-text",
+    "phpcs": "vendor/bin/phpcs --standard=PSR12 --warning-severity=0 src",
+    "phpcsf": "vendor/bin/phpcbf --standard=PSR12 --warning-severity=0 src",
+    "psalm": "vendor/bin/psalm --show-info=false"
+  }
+}
