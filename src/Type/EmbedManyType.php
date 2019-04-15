@@ -19,11 +19,9 @@ class EmbedManyType implements Type
 
     public function hydrate($value) : iterable
     {
-
     }
 
     public function extract($value) : ?array
     {
-
     }
 }
