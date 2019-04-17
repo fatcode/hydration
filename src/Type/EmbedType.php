@@ -31,7 +31,7 @@ class EmbedType implements Type, NullableType
             if ($this->nullable) {
                 return null;
             }
-            throw HydrationException::forUnallowedNullable();
+            throw HydrationException::forUnexpectedNullValue();
         }
 
         return $this->extractObject($this->schema, $value);

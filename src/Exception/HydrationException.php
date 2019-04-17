@@ -3,6 +3,9 @@
 namespace FatCode\Hydration\Exception;
 
 use FatCode\Hydration\Schema;
+use function get_class;
+use function gettype;
+use function is_object;
 use RuntimeException;
 
 class HydrationException extends RuntimeException implements Exception
@@ -40,7 +43,7 @@ class HydrationException extends RuntimeException implements Exception
             "are you sure that name mapping is set correctly? Failure message: {$message}");
     }
 
-    public static function forUnallowedNullable() : self
+    public static function forUnexpectedNullValue() : self
     {
         return new self('Cannot extract/hydrate null value, field is not nullable.' .
             'Please set value or make field nullable.');
@@ -50,5 +53,11 @@ class HydrationException extends RuntimeException implements Exception
     {
         $class = get_class($object);
         return new self("Failed to hydrate instance of `$class`, class defines no {$name} property.");
+    }
+
+    public static function forUnexpectedValue($passed, string $expectedType) : self
+    {
+        $passedType = is_object($passed) ? get_class($passed) : gettype($passed);
+        return new self("Expected passed value to be type of {$expectedType}, {$passedType} passed instead.");
     }
 }

@@ -13,7 +13,7 @@ use function unserialize;
 /**
  * Instantiates objects without calling their constructor.
  *
- * @package FatCode\Storage\Hydration
+ * @package FatCode\Hydration
  */
 final class Instantiator
 {
