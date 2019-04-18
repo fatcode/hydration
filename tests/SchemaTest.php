@@ -24,6 +24,7 @@ final class SchemaTest extends TestCase
         self::assertInstanceOf(IntegerType::class, $properties['age']);
         self::assertInstanceOf(StringType::class, $properties['eyeColor']);
         self::assertTrue($schema->definesId());
+        self::assertSame('id', $schema->getIdName());
     }
 
     public function testIterateThroughSchema() : void
@@ -38,7 +39,6 @@ final class SchemaTest extends TestCase
     public function testGetNamingStrategy() : void
     {
         $schema = new UserSchema();
-
         self::assertInstanceOf(NamingStrategy::class, $schema->getNamingStrategy());
     }
 }

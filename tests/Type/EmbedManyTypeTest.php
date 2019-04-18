@@ -2,82 +2,56 @@
 
 namespace FatCode\Tests\Storage\Hydration\Type;
 
-use FatCode\Hydration\Exception\HydrationException;
-use FatCode\Hydration\Type\EmbedType;
-use FatCode\Tests\Hydration\Fixtures\User;
-use FatCode\Tests\Hydration\Fixtures\UserName;
-use FatCode\Tests\Hydration\Fixtures\UserSchema;
-use FatCode\Tests\Hydration\Fixtures\UserWallet;
+use FatCode\Hydration\Type\EmbedManyType;
+use FatCode\Tests\Hydration\Fixtures\SimpleUser;
+use FatCode\Tests\Hydration\Fixtures\SimpleUserSchema;
 use PHPUnit\Framework\TestCase;
 
-final class EmbedTypeTest extends TestCase
+final class EmbedManyTypeTest extends TestCase
 {
     public function testHydrate() : void
     {
-        $type = new EmbedType(new UserSchema());
-        /** @var User $hydrated */
-        $hydrated = $type->hydrate([
-            'id' => 1,
-            'name' => [
-                'firstName' => 'John',
-                'lastName' => 'Doe',
+        $type = new EmbedManyType(new SimpleUserSchema());
+        $users = $type->hydrate([
+            [
+                'name' => 'John Doe',
+                'email' => 'john.doe@mail.com',
+                'age' => 40,
             ],
-            'wallet' => [
-                'amount' => '1000.20',
-                'currency' => 'EUR',
+            [
+                'name' => 'Alica Doe',
+                'email' => 'alica.doe@mail.com',
+                'age' => 30,
             ],
-            'age' => '15',
-            'creationTimeDate' => time(),
-            'creationTimeTimezone' => 'UTC',
+            [
+                'name' => 'Ron Doe',
+                'email' => 'ron.doe@mail.com',
+                'age' => 20,
+            ],
         ]);
 
-        self::assertInstanceOf(User::class, $hydrated);
-        self::assertSame(15, $hydrated->getAge());
-        self::assertInstanceOf(UserWallet::class, $hydrated->getWallet());
-        self::assertSame('1000.20', $hydrated->getWallet()->getAmount());
-        self::assertSame('EUR', $hydrated->getWallet()->getCurrency());
-        self::assertInstanceOf(UserName::class, $hydrated->getName());
-        self::assertSame('John', $hydrated->getName()->getFirstName());
-        self::assertSame('Doe', $hydrated->getName()->getLastName());
+        self::assertCount(3, $users);
+        foreach ($users as $user) {
+            self::assertInstanceOf(SimpleUser::class, $user);
+        }
     }
 
     public function testExtract() : void
     {
-        $user = new User(new UserName('John', 'Doe'), new UserWallet('GBP', '100.50'));
-        $type = new EmbedType(new UserSchema());
-        $extracted = $type->extract($user);
+        $users = [
+            new SimpleUser('John Doe', 'john.doe@mail.com', 40),
+            new SimpleUser('Alice Doe', 'alice.doe@mail.com', 30),
+            new SimpleUser('Ron Doe', 'ron.doe@mail.com', 20),
+        ];
 
-        self::assertEquals(
-            [
-                'firstName' => 'John',
-                'lastName' => 'Doe',
-            ],
-            $extracted['name']
-        );
+        $type = new EmbedManyType(new SimpleUserSchema());
+        $extracted = $type->extract($users);
 
-        self::assertEquals(
-            [
-                'currency' => 'GBP',
-                'amount' => '100.50',
-            ],
-            $extracted['wallet']
-        );
-
-        self::assertArrayHasKey('creationTimeDate', $extracted);
-        self::assertArrayHasKey('creationTimeTimezone', $extracted);
-    }
-
-    public function testFailOnNullableExtraction() : void
-    {
-        $this->expectException(HydrationException::class);
-        $type = new EmbedType(new UserSchema());
-        $type->extract(null);
-    }
-
-    public function testExtractNull() : void
-    {
-        $type = new EmbedType(new UserSchema());
-        $type->nullable();
-        self::assertNull($type->extract(null));
+        self::assertCount(3, $extracted);
+        foreach ($extracted as $hash) {
+            self::assertArrayHasKey('name', $hash);
+            self::assertArrayHasKey('email', $hash);
+            self::assertArrayHasKey('age', $hash);
+        }
     }
 }

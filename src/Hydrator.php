@@ -4,5 +4,5 @@ namespace FatCode\Hydration;
 
 interface Hydrator
 {
-    public function hydrate(array $hash, object $object) : object;
+    public function hydrate(array $hash, $object) : object;
 }
